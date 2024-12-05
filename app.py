@@ -37,6 +37,8 @@ def get_cat_images(breed_id=None, num=3):
     params = {"limit": num, "has_breeds": 1}
     if breed_id:
         params["breed_ids"] = breed_id
+    else:
+        params["order"] = "RANDOM"
 
     response = requests.get(CAT_API_URL, headers=headers, params=params)
     if response.status_code != 200:
@@ -102,15 +104,12 @@ def chat_with_assistant_or_cats():
 
         breed_name = parsed_data.get("breed")
         num = parsed_data.get("num", 3)
-
-        # Match breed name with breed ID
-        breed_id = breeds_cache.get(breed_name.lower()) if breed_name else None
-
-        # Use default values if no valid breed or number is found
-        if not breed_name or not breed_id:
-            breed_name = None
+        
+        if not breed_name:
             breed_id = None
-            num = 3
+        else:
+        # Match breed name with breed ID
+            breed_id = breeds_cache.get(breed_name.lower()) if breed_name else None
 
         # Fetch cat images
         cat_images = get_cat_images(breed_id, num)
